@@ -1,0 +1,11 @@
+The first Row have an email where the email will be sent to, if you want to send to the email address of people listed in the spreadsheet just change it to their email address or change the code,
+Object :
+var recipient = sheet.getRange('B1').getValue(); //receiver of the email
+
+You can also add email body by seraching for // Compose the draft email subject and body and change the component inside. 
+
+Setting on Google Spread Sheet. 
+1. Before running the Script make sure to saved the file and run it on onEdit function. 
+2. Pleas emake sure to set the triggers on the right function for it to function properly 
+3. When executing an action, it will send 2 prompt to confirm with the user before executing the action. 
+
