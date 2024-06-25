@@ -1,0 +1,77 @@
+function onEdit(e) {
+  /* Note : When using e.range please do not run and just Save your edit.  
+  If you are making new functions remember to put it on trigger so it can run. 
+  Do not combine trigger and normal function, just make another script using this project 
+*/
+  var range = e.range;
+  var sheet = range.getSheet();
+  
+  // Check if the edited range is in column A and the edited value is "Email"
+  if (range.getColumn() == 1 && range.getValue() === "Email") {
+    var editedRow = range.getRow();
+    var rowData = sheet.getRange(editedRow, 1, 1, sheet.getLastColumn()).getValues()[0];
+    
+    var recipient = rowData[6]; // Assuming recipient's email is in column G (7th column)
+    var column1Value = rowData[1]; // Value in column B (2nd column) firstname
+    var column2Value = rowData[2]; // Value in column C (3rd column) Last Name
+    var column3Value = rowData[3]; // Value in column C (3rd column) Last Name
+    var column4Value = rowData[4]; // Value in column E (5th column) Company
+    var column5Value = rowData[5]; // Value in column F (6th column) Job Position
+    var column6Value = rowData[6]; // Value in column F (7th column) Email
+    var recipient = sheet.getRange('B1').getValue(); //receiver 
+ 
+
+    // Compose the draft email subject and body
+    var subject = 'Email to ' + column4Value; // Using column E value
+    var body = 'Dear ' + column1Value + ' ' + column2Value + ' , ' + column3Value +'\n\n';
+    body += 'Email address ' + column6Value + '\n';
+    body += 'Company: ' + column4Value + '\n';
+    body += 'Position: ' + column5Value + '\n';
+    body += 'Row Number: ' + editedRow + '\n\n';
+    
+    // Confirm prompt before creating draft email
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.alert('Create Draft Email', 'Do you want to create a draft email for this row?', ui.ButtonSet.YES_NO);
+    
+    if (response === ui.Button.YES) {
+      createDraftEmail( recipient, subject, body);
+    } else {
+      Logger.log('User canceled the email creation.');
+      // Optionally, set the cell value to "No Action"
+      range.setValue("No Action");
+    }
+  }
+}
+
+// Function to create a draft email
+function createDraftEmail(recipient, subject, body) {
+  var draft = GmailApp.sendEmail(recipient, subject, body);
+  Logger.log('Draft email created with subject: ' + subject);
+}
+
+
+function onOpen() {
+  // Replace with the URL of your Google Sheet
+  var spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1P8fNu0Igp4-nyaEcgX-legsFL-6xqeHhugjbBV5BD6s/edit#gid=0';
+  
+  // Open the spreadsheet using the provided URL
+  var spreadsheet = SpreadsheetApp.openByUrl(spreadsheetUrl);
+  
+  // Get the active sheet from the opened spreadsheet
+  var sheet = spreadsheet.getActiveSheet();
+  
+  // Get all data in column A (column 1)
+  var columnARange = sheet.getRange("A:A");
+  var columnAValues = columnARange.getValues();
+  
+  // Loop through all values in column A
+  for (var i = 1; i < columnAValues.length; i++) {
+    var cellValue = columnAValues[i][0]; // Get the value of the cell in column A
+    
+    // Check if the cell value is "Email"
+    if (cellValue === "Email") {
+      // Set the cell value to "No Action"
+      sheet.getRange(i + 1, 1).setValue("No Action"); // i + 1 because rows are 1-indexed
+    }
+  }
+}
